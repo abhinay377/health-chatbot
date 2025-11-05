@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MediCare AI - Professional Healthcare Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --medical-primary: #147074ff;
+      --medical-secondary: #14a85f;
+      --medical-accent: #a5f3fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --glass-bg: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-primary: #000000ff;
+      --text-secondary: rgba(0, 0, 0, 0.8);
+      --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.25);
+      --gradient-medical: linear-gradient(135deg, var(--medical-primary), var(--medical-secondary));
+      --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gradient-medical);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Enhanced animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(165, 243, 252, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      animation: backgroundShift 20s ease-in-out infinite;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+      50% { transform: translateX(-10px) translateY(-5px) scale(1.02); }
+    }
+
+    /* Main container with enhanced glass effect */
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow-strong);
+      overflow: hidden;
+      animation: slideInUp 0.6s ease-out;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Floating particles effect */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+    .particle:nth-child(3) { left: 35%; animation-delay: 4s; }
+    .particle:nth-child(4) { left: 50%; animation-delay: 6s; }
+    .particle:nth-child(5) { left: 65%; animation-delay: 8s; }
+    .particle:nth-child(6) { left: 80%; animation-delay: 10s; }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Header section */
+    .header {
+      text-align: center;
+      padding: 40px 30px;
+      background: var(--gradient-glass);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-medical);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: var(--shadow-soft);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--medical-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .badge:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Content area */
+    .content {
+      padding: 30px;
+    }
+
+    /* Enhanced tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 6px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 12px;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-medical);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .tab-btn.active {
+      color: var(--text-primary);
+      background: var(--gradient-medical);
+      box-shadow: var(--shadow-soft);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .tab-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Tab content with smooth transitions */
+    .tab-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Enhanced form elements */
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--medical-secondary);
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 3px rgba(20, 168, 95, 0.1);
+    }
+
+    select::placeholder, input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    select[multiple] {
+      min-height: 120px;
+    }
+
+    /* Enhanced buttons */
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--gradient-medical);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Loading spinner */
+    .loader {
+      display: none;
+      width: 48px;
+      height: 48px;
+      margin: 32px auto;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid var(--medical-secondary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Results card */
+    .result {
+      display: none;
+      margin-top: 32px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result h3 {
+      color: var(--medical-secondary);
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .result p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .result h4 {
+      color: var(--text-primary);
+      margin: 20px 0 12px;
+      font-size: 1.1rem;
+    }
+
+    .result ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .result li {
+      color: var(--text-secondary);
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .result li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    /* Reminders section */
+    .reminder-item {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .reminder-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-medical);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .reminder-info {
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .reminder-time {
+      font-weight: 600;
+      color: var(--medical-secondary);
+    }
+
+    /* Status messages */
+    .status-message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .status-success {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .status-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde047;
+    }
+
+    /* About section styling */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--gradient-medical);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 16px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .feature-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px;
+      }
+
+      .header {
+        padding: 30px 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 12px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        border-radius: 16px;
+      }
+
+      .header {
+        padding: 20px 15px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating particles -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">💚</div>
+        <h1>MediCare AI</h1>
+      </div>
+      <p class="subtitle">
+        Professional AI-powered healthcare assistant for intelligent diagnosis, 
+        symptom analysis, and personalized medicine reminders
+      </p>
+      <div class="badges">
+        <span class="badge">🛡️ HIPAA Compliant</span>
+        <span class="badge">🧠 AI-Powered</span>
+        <span class="badge">⚡ Real-time Analysis</span>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="diagnosis">
+          <span class="tab-icon">🩺</span>
+          <span>Diagnosis</span>
+        </button>
+        <button class="tab-btn" data-tab="reminders">
+          <span class="tab-icon">⏰</span>
+          <span>Reminders</span>
+        </button>
+        <button class="tab-btn" data-tab="about">
+          <span class="tab-icon">ℹ️</span>
+          <span>About</span>
+        </button>
+      </div>
+
+      <!-- Diagnosis Tab -->
+      <div id="diagnosis" class="tab-content active">
+        <div class="form-group">
+          <label for="disease">Select Disease (optional):</label>
+          <select id="disease">
+            <option value="">-- Choose disease to filter symptoms --</option>
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="symptoms">Select Symptoms:</label>
+            <select id="symptoms" multiple>
+              <option disabled>Loading symptoms...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="days">Days experiencing symptoms:</label>
+            <input id="days" type="number" min="1" value="1" placeholder="Enter number of days">
+          </div>
+        </div>
+
+        <button id="predictBtn" class="btn btn-primary">
+          <span>🔮</span>
+          <span>Analyze Symptoms</span>
+        </button>
+
+        <div class="loader" id="loader"></div>
+        
+        <div id="result" class="result">
+          <div id="meta" style="color: var(--medical-secondary); font-weight: 600; margin-bottom: 16px;"></div>
+          <h3 id="predTitle"></h3>
+          <p id="predDesc"></p>
+          <h4>Recommended Precautions</h4>
+          <ul id="precList"></ul>
+          <div id="condMsg" class="status-message"></div>
+        </div>
+      </div>
+
+      <!-- Reminders Tab -->
+      <div id="reminders" class="tab-content">
+        <h3 style="color: var(--text-primary); margin-bottom: 24px;">💊 Medicine Reminder System</h3>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="medicineName">Medicine Name:</label>
+            <input type="text" id="medicineName" placeholder="Enter medicine name">
+          </div>
+          <div class="form-group">
+            <label for="reminderTime">Reminder Time:</label>
+            <input type="time" id="reminderTime">
+          </div>
+        </div>
+
+        <button id="addReminderBtn" class="btn btn-primary">
+          <span>➕</span>
+          <span>Add Reminder</span>
+        </button>
+
+        <div id="reminderMsg" class="status-message" style="display: none;"></div>
+        <div id="reminderList"></div>
+
+        <!-- Audio elements -->
+        <audio id="preAlert">
+          <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+        </audio>
+        <audio id="reminderSound">
+          <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+        </audio>
+      </div>
+
+      <!-- About Tab -->
+      <div id="about" class="tab-content">
+        <h3 style="color: var(--text-primary); margin-bottom: 24px;">ℹ️ About MediCare AI</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 32px;">
+          MediCare AI is a comprehensive healthcare assistant powered by advanced machine learning algorithms. 
+          Our platform combines intelligent symptom analysis with personalized medicine reminders to provide 
+          you with professional healthcare insights and management tools.
+        </p>
+
+        <div class="about-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">AI Diagnosis</div>
+            <div class="feature-desc">Advanced machine learning algorithms analyze your symptoms to provide accurate health predictions</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">⏰</div>
+            <div class="feature-title">Smart Reminders</div>
+            <div class="feature-desc">Never miss your medication with intelligent reminder system and notifications</div>
+          </div>
+          
+          <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-title">Secure & Private</div>
+            <div class="feature-desc">Your health data is protected with enterprise-grade security and privacy measures</div>
+          </div>
+        </div>
+
+        <div class="status-message status-warning" style="margin-top: 32px;">
+          <strong>⚠️ Important:</strong> This tool provides general health information and should not replace professional medical advice. Always consult with a healthcare provider for proper diagnosis and treatment.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced tab functionality with smooth transitions
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const activeContent = document.querySelector(".tab-content.active");
+        const targetContent = document.getElementById(btn.dataset.tab);
+        
+        // Update button states
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        
+        // Animate content transition
+        if (activeContent !== targetContent) {
+          activeContent.style.opacity = "0";
+          activeContent.style.transform = "translateY(-20px)";
+          
+          setTimeout(() => {
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+            targetContent.classList.add("active");
+            targetContent.style.opacity = "0";
+            targetContent.style.transform = "translateY(20px)";
+            
+            requestAnimationFrame(() => {
+              targetContent.style.opacity = "1";
+              targetContent.style.transform = "translateY(0)";
+            });
+          }, 200);
+        }
+      });
+    });
+
+    // Enhanced API functions with better error handling
+    async function fetchDiseases() {
+      try {
+        const res = await fetch("/diseases");
+        if (!res.ok) throw new Error('Failed to fetch diseases');
+        const arr = await res.json();
+        const sel = document.getElementById("disease");
+        sel.innerHTML = "<option value=''>-- Choose disease to filter symptoms --</option>";
+        arr.forEach(d => {
+          let o = document.createElement("option");
+          o.value = d;
+          o.textContent = d;
+          sel.appendChild(o);
+        });
+      } catch (err) {
+        console.error('Error fetching diseases:', err);
+        showStatusMessage('Failed to load diseases', 'error');
+      }
+    }
+
+    async function fetchAllSymptoms() {
+      try {
+        const res = await fetch("/symptoms");
+        if (!res.ok) throw new Error('Failed to fetch symptoms');
+        const arr = await res.json();
+        const sel = document.getElementById("symptoms");
+        sel.innerHTML = "";
+        arr.forEach(s => {
+          let o = document.createElement("option");
+          o.value = s;
+          o.textContent = s;
+          sel.appendChild(o);
+        });
+      } catch (err) {
+        console.error('Error fetching symptoms:', err);
+        const sel = document.getElementById("symptoms");
+        sel.innerHTML = "<option disabled>Error loading symptoms</option>";
+      }
+    }
+
+    // Disease change handler with loading state
+    document.getElementById("disease").addEventListener("change", async function() {
+      const symptomsSelect = document.getElementById("symptoms");
+      symptomsSelect.innerHTML = "<option disabled>Loading...</option>";
+      
+      if (this.value) {
+        try {
+          const res = await fetch(`/symptoms/${encodeURIComponent(this.value)}`);
+          if (!res.ok) throw new Error('Failed to fetch disease symptoms');
+          const arr = await res.json();
+          symptomsSelect.innerHTML = "";
+          arr.forEach(s => {
+            let o = document.createElement("option");
+            o.value = s;
+            o.textContent = s;
+            symptomsSelect.appendChild(o);
+          });
+        } catch (err) {
+          console.error('Error fetching disease symptoms:', err);
+          symptomsSelect.innerHTML = "<option disabled>Error loading symptoms</option>";
+        }
+      } else {
+        fetchAllSymptoms();
+      }
+    });
+
+    // Enhanced prediction with better UX
+    document.getElementById("predictBtn").addEventListener("click", async () => {
+      const sel = document.getElementById("symptoms");
+      const selected = Array.from(sel.selectedOptions).map(o => o.value);
+      const days = parseInt(document.getElementById("days").value || "0", 10);
+
+      if (selected.length === 0) {
+        showStatusMessage("Please select at least one symptom", "warning");
+        return;
+      }
+      if (!days || days < 1) {
+        showStatusMessage("Please enter a valid number of days", "warning");
+        return;
+      }
+
+      // Show loading state
+      const loader = document.getElementById("loader");
+      const result = document.getElementById("result");
+      const btn = document.getElementById("predictBtn");
+      
+      loader.style.display = "block";
+      result.style.display = "none";
+      btn.disabled = true;
+      btn.innerHTML = '<span>🔄</span><span>Analyzing...</span>';
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ symptoms: selected, days })
+        });
+
+        if (!res.ok) throw new Error('Prediction request failed');
+        const prediction = await res.json();
+        
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔮</span><span>Analyze Symptoms</span>';
+
+        if (!prediction.success) {
+          showStatusMessage(prediction.message || "Prediction failed", "error");
+          return;
+        }
+
+        // Display results with enhanced formatting
+        result.style.display = "block";
+        document.getElementById("meta").textContent = `Predicted Condition: ${prediction.disease}`;
+        document.getElementById("predTitle").textContent = prediction.disease;
+        document.getElementById("predDesc").textContent = prediction.description || "No description available.";
+        
+        const ul = document.getElementById("precList");
+        ul.innerHTML = "";
+        (prediction.precautions || []).forEach(p => {
+          let li = document.createElement("li");
+          li.textContent = p;
+          ul.appendChild(li);
+        });
+
+        const condMsg = document.getElementById("condMsg");
+        condMsg.textContent = prediction.condition || "";
+        condMsg.className = "status-message " + (prediction.condition?.includes("consult") ? "status-warning" : "status-success");
+
+      } catch (err) {
+        console.error('Prediction error:', err);
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔮</span><span>Analyze Symptoms</span>';
+        showStatusMessage("Failed to analyze symptoms. Please try again.", "error");
+      }
+    });
+
+    // Enhanced reminder system
+    const reminders = [];
+
+    document.getElementById("addReminderBtn").addEventListener("click", () => {
+      const medName = document.getElementById("medicineName").value.trim();
+      const time = document.getElementById("reminderTime").value;
+
+      if (!medName) {
+        showStatusMessage("Please enter the medicine name", "warning");
+        return;
+      }
+      if (!time) {
+        showStatusMessage("Please select a time", "warning");
+        return;
+      }
+
+      const now = new Date();
+      const [hh, mm] = time.split(":").map(Number);
+      let reminder = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+      if (reminder <= now) reminder.setDate(reminder.getDate() + 1);
+      const delay = reminder - now;
+
+      const reminderObj = { 
+        name: medName, 
+        time: reminder.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        id: Date.now()
+      };
+      reminders.push(reminderObj);
+
+      // Add to UI with enhanced styling
+      const reminderItem = document.createElement("div");
+      reminderItem.className = "reminder-item";
+      reminderItem.innerHTML = `
+        <div class="reminder-icon">💊</div>
+        <div class="reminder-info">
+          <div><strong>${reminderObj.name}</strong></div>
+          <div class="reminder-time">${reminderObj.time}</div>
+        </div>
+      `;
+      document.getElementById("reminderList").appendChild(reminderItem);
+
+      showStatusMessage(`Reminder set for ${reminderObj.name} at ${reminderObj.time}`, "success");
+
+      // Request notification permission
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
+
+      // Set reminder with enhanced notifications
+      setTimeout(() => {
+        document.getElementById("preAlert").play().catch(() => {});
+        setTimeout(() => {
+          if (Notification.permission === "granted") {
+            new Notification("💊 Medicine Reminder", { 
+              body: `Time to take ${reminderObj.name}!`,
+              icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💊</text></svg>"
+            });
+          } else {
+            alert(`💊 Time to take ${reminderObj.name}!`);
+          }
+          document.getElementById("reminderSound").play().catch(() => {});
+        }, 1500);
+      }, delay);
+
+      // Reset form
+      document.getElementById("medicineName").value = "";
+      document.getElementById("reminderTime").value = "";
+    });
+
+    // Utility function for status messages
+    function showStatusMessage(message, type = 'success') {
+      const msgElement = document.getElementById("reminderMsg");
+      msgElement.textContent = message;
+      msgElement.className = `status-message status-${type}`;
+      msgElement.style.display = "block";
+      
+      setTimeout(() => {
+        msgElement.style.display = "none";
+      }, 5000);
+    }
+
+    // Initialize application
+    window.addEventListener("load", () => {
+      fetchDiseases();
+      fetchAllSymptoms();
+      
+      // Add loading animation
+      document.body.style.opacity = "0";
+      requestAnimationFrame(() => {
+        document.body.style.transition = "opacity 0.5s ease";
+        document.body.style.opacity = "1";
+      });
+    });
+
+    // Add keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target.tagName === "INPUT") {
+        if (e.target.closest("#diagnosis")) {
+          document.getElementById("predictBtn").click();
+        } else if (e.target.closest("#reminders")) {
+          document.getElementById("addReminderBtn").click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

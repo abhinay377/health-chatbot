@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prediction Result</title>
+  <script>
+    async function loadPrediction() {
+      const symptoms = JSON.parse(localStorage.getItem("symptoms") || "[]");
+      const days = parseInt(localStorage.getItem("days") || "0", 10);
+      if (!symptoms.length) {
+        document.getElementById("result").innerText = "No symptoms selected.";
+        return;
+      }
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptoms, days })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        document.getElementById("result").innerText = "Error: " + data.message;
+        return;
+      }
+      document.getElementById("disease").innerText = data.disease;
+      document.getElementById("desc").innerText = data.description;
+      document.getElementById("condition").innerText = data.condition;
+      const ul = document.getElementById("precautions");
+      ul.innerHTML = "";
+      (data.precautions || []).forEach(p => {
+        const li = document.createElement("li");
+        li.innerText = p;
+        ul.appendChild(li);
+      });
+    }
+    window.onload = loadPrediction;
+  </script>
+</head>
+<body>
+  <h1>Prediction Result</h1>
+  <p><strong>Disease:</strong> <span id="disease"></span></p>
+  <p><strong>Description:</strong> <span id="desc"></span></p>
+  <p><strong>Condition:</strong> <span id="condition"></span></p>
+  <h3>Precautions:</h3>
+  <ul id="precautions"></ul>
+  <a href="/">🔙 Back</a>
+</body>
+</html>
