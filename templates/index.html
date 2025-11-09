@@ -664,41 +664,62 @@
 
       <!-- Diagnosis Tab -->
       <div id="diagnosis" class="tab-content active">
-        <div class="form-group">
-          <label for="disease">Select Disease (optional):</label>
-          <select id="disease">
-            <option value="">-- Choose disease to filter symptoms --</option>
-          </select>
-        </div>
+  <div class="form-group">
+    <label for="disease">Select Disease (optional):</label>
+    <select id="disease">
+      <option value="">-- Choose disease to filter symptoms --</option>
+    </select>
+  </div>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="symptoms">Select Symptoms:</label>
-            <select id="symptoms" multiple>
-              <option disabled>Loading symptoms...</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="days">Days experiencing symptoms:</label>
-            <input id="days" type="number" min="1" value="1" placeholder="Enter number of days">
-          </div>
-        </div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="symptoms">Select Symptoms:</label>
+      <select id="symptoms" multiple>
+        <option disabled>Loading symptoms...</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="days">Days experiencing symptoms:</label>
+      <input id="days" type="number" min="1" value="1" placeholder="Enter number of days">
+    </div>
+  </div>
 
-        <button id="predictBtn" class="btn btn-primary">
-          <span>🔮</span>
-          <span>Analyze Symptoms</span>
-        </button>
+  <!-- 🌍 Language Selector -->
+  <div class="form-group">
+    <label for="lang">Select Language:</label>
+    <select id="lang">
+      <option value="en">English</option>
+      <option value="hi">Hindi (हिन्दी)</option>
+      <option value="te">Telugu (తెలుగు)</option>
+      <option value="ta">Tamil (தமிழ்)</option>
+      <option value="kn">Kannada (ಕನ್ನಡ)</option>
+      <option value="ml">Malayalam (മലയാളം)</option>
+      <option value="fr">French (Français)</option>
+      <option value="es">Spanish (Español)</option>
+    </select>
+  </div>
 
-        <div class="loader" id="loader"></div>
-        
-        <div id="result" class="result">
-          <div id="meta" style="color: var(--medical-secondary); font-weight: 600; margin-bottom: 16px;"></div>
-          <h3 id="predTitle"></h3>
-          <p id="predDesc"></p>
-          <h4>Recommended Precautions</h4>
-          <ul id="precList"></ul>
-          <div id="condMsg" class="status-message"></div>
-        </div>
+  <button id="predictBtn" class="btn btn-primary">
+    <span></span>
+    <span>Analyze Symptoms</span>
+  </button>
+
+  <div class="loader" id="loader"></div>
+</div>
+
+       <div id="result" class="result">
+  <div id="meta" style="color: var(--medical-secondary); font-weight: 600; margin-bottom: 16px;"></div>
+  <h3 id="predTitle"></h3>
+  <p id="predDesc"></p>
+  <h4>Recommended Precautions</h4>
+  <ul id="precList"></ul>
+
+  <!-- 💊 NEW SECTION -->
+  <h4>Recommended Medicines</h4>
+  <div id="medList"></div>
+
+  <div id="condMsg" class="status-message"></div>
+</div>
       </div>
 
       <!-- Reminders Tab -->
@@ -923,6 +944,31 @@
           li.textContent = p;
           ul.appendChild(li);
         });
+        // 💊 Show Recommended Medicines
+const medDiv = document.getElementById("medList");
+medDiv.innerHTML = "";
+
+if (prediction.medicines && prediction.medicines.length > 0) {
+  prediction.medicines.forEach(med => {
+    const card = document.createElement("div");
+    card.style.margin = "10px 0";
+    card.style.padding = "12px";
+    card.style.border = "1px solid rgba(255,255,255,0.2)";
+    card.style.borderRadius = "10px";
+    card.style.background = "rgba(255,255,255,0.1)";
+    card.innerHTML = `
+      <strong>💊 ${med.Medicine_Name}</strong><br>
+      <em>${med.Category || ""}</em><br>
+      <span>🧠 Purpose:</span> ${med.Purpose || "N/A"}<br>
+      <span>💧 Dosage:</span> ${med.Dosage || "N/A"}<br>
+      <span>⚠️ Side Effects:</span> ${med.Side_Effects || "N/A"}
+    `;
+    medDiv.appendChild(card);
+  });
+} else {
+  medDiv.innerHTML = "<p style='color: var(--text-secondary);'>No medicine recommendations available for this disease.</p>";
+}
+
 
         const condMsg = document.getElementById("condMsg");
         condMsg.textContent = prediction.condition || "";
@@ -1041,6 +1087,37 @@
         }
       }
     });
+ // ✅ Show recommended medicines
+const medSectionTitle = document.createElement("h4");
+medSectionTitle.textContent = "💊 Recommended Medicines";
+const medDiv = document.createElement("div");
+medDiv.id = "medList";
+medDiv.style.marginTop = "10px";
+
+if (prediction.medicines && prediction.medicines.length > 0) {
+  prediction.medicines.forEach(med => {
+    const medBox = document.createElement("div");
+    medBox.style.background = "rgba(255,255,255,0.1)";
+    medBox.style.border = "1px solid rgba(255,255,255,0.2)";
+    medBox.style.borderRadius = "10px";
+    medBox.style.padding = "12px";
+    medBox.style.marginBottom = "10px";
+    medBox.innerHTML = `
+      <strong>${med.Medicine_Name}</strong><br>
+      <small>${med.Category || ""}</small><br>
+      <em>Purpose:</em> ${med.Purpose || "N/A"}<br>
+      <em>Dosage:</em> ${med.Dosage || "N/A"}<br>
+      <em>Side Effects:</em> ${med.Side_Effects || "N/A"}
+    `;
+    medDiv.appendChild(medBox);
+  });
+} else {
+  medDiv.innerHTML = "<p>No medicines found for this condition.</p>";
+}
+
+result.appendChild(medSectionTitle);
+result.appendChild(medDiv);
+
   </script>
 </body>
 </html>
